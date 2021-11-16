@@ -22,7 +22,7 @@ namespace LANMaker
 				});
 
 			builder.Services.AddBlazorWebView();
-			builder.Services.AddSingleton<WeatherForecastService>();
+			builder.Services.AddSingleton<ConfigurationService>();
 
 			return builder.Build();
 		}

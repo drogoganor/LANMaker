@@ -1,0 +1,34 @@
+﻿@page "/configure"
+
+@using LANMaker.Data
+@inject ConfigurationService ConfigurationService
+
+<h1>Settings</h1>
+
+<p>Add your LAN coordinator's server manifest URL below.</p>
+
+@if (configuration == null)
+{
+	<p><em>Loading...</em></p>
+}
+else
+{
+	<EditForm Model="@configuration" OnValidSubmit="@HandleValidSubmit">
+		<InputText id="manifestUrl" @bind-Value="configuration.ManifestUrl" />
+		<button class="btn btn-primary" type="submit">Save</button>
+	</EditForm>
+}
+
+@code {
+	private Configuration configuration;
+
+	protected override async Task OnInitializedAsync()
+	{
+		configuration = await ConfigurationService.GetConfiguration();
+	}
+
+	private async void HandleValidSubmit()
+	{
+		await ConfigurationService.SaveConfiguration(configuration);
+	}
+}

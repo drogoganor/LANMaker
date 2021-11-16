@@ -1,0 +1,17 @@
+{
+  "Games": [
+    {
+      "Name": "Dark Forces",
+      "Version": "0_02_001-129-gbc44570",
+      "ZipUrl": "",
+      "Portable": true,
+      "ScreenshotUrls": [
+        ""
+      ],
+      "Multiplayer": false,
+      "Description": "Star Wars: Dark Forces is a first-person shooter video game developed and published by LucasArts. It was released in 1995 for MS-DOS and Macintosh.",
+      "Publisher": "LucasArts",
+      "YearPublished": 1995
+    }
+  ]
+}
