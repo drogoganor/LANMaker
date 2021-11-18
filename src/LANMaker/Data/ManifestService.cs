@@ -125,7 +125,12 @@ namespace LANMaker.Data
         /// <returns></returns>
         private async Task<Manifest> FetchManifest(CancellationToken stoppingToken)
         {
-            var configuration = await _configurationService.GetConfiguration(stoppingToken);
+            var configuration = _configurationService.Configuration;
+            if (configuration == null)
+            {
+                return null;
+            }
+
             var manifestUrl = configuration.ManifestUrl;
             var manifestStream = await DownloadTextFile(manifestUrl, stoppingToken);
             Manifest manifest;

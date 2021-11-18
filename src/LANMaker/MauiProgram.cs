@@ -23,10 +23,11 @@ namespace LANMaker
 				});
 
 			builder.Services.AddBlazorWebView();
-			builder.Services.AddSingleton<ManifestService>()
-							.AddScoped<ConfigurationService>()
-							.AddScoped<InstallerService>()
-							.AddScoped<GameRunService>();
+			builder.Services.AddSingleton<ManifestService>();
+			builder.Services.AddSingleton<ConfigurationService>();
+			builder.Services.AddSingleton<InstallerService>();
+			builder.Services.AddSingleton<GameRunService>();
+			builder.Services.AddSingleton<DownloadTrackerService>();
 
 			return builder.Build();
 		}

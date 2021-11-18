@@ -3,12 +3,12 @@
     {
       "Name": "Enigma (Windows)",
       "Version": "Enigma-1.30-windows10",
-      "ZipUrl": "http://drogoganor.net/lan/Enigma/Enigma-1.30-windows10.zip",
+      "Multiplayer": false,
       "Portable": true,
       "PosterUrl": "http://drogoganor.net/lan/Enigma/poster.png",
       "ExeName": "enigma.exe",
+      "ZipUrl": "http://drogoganor.net/lan/Enigma/Enigma-1.30-windows10.zip",
       "ScreenshotUrls": [],
-      "Multiplayer": false,
       "Description": "Open-source clone of the popular marble rolling game Oxyd.",
       "Publisher": "Daniel Heck",
       "YearPublished": 2003

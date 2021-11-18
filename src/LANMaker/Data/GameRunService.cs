@@ -30,14 +30,22 @@ namespace LANMaker.Data
                 }
             }
 
-			var installPath = Path.Combine(_manifestService.ConfigurationDirectory, game.Name, game.ExePath);
+			var workingDirectory = Path.Combine(_manifestService.ConfigurationDirectory, game.Name);
+			var processPath = Path.Combine(workingDirectory, game.ExePath);
 
-			if (!File.Exists(installPath))
+			if (!File.Exists(processPath))
             {
-				throw new Exception($"Couldn't find path: {installPath}");
+				throw new Exception($"Couldn't find path: {processPath}");
             }
 
-			process = Process.Start(installPath);
+			var processInfo = new ProcessStartInfo
+			{
+				FileName = processPath,
+				WorkingDirectory = workingDirectory,
+				//UseShellExecute = true,
+			};
+
+			process = Process.Start(processInfo);
 		}
 	}
 }

@@ -1,0 +1,63 @@
+﻿@page "/downloads"
+
+@using System.Threading
+@using LANMaker.Data
+@inject NavigationManager NavigationManager
+@inject DownloadTrackerService DownloadTrackerService
+
+<h1>Downloads</h1>
+
+<div class="d-flex flex-wrap">
+	@foreach (var download in downloads)
+	{
+		<div class="card me-2 mb-2" style="width: 18rem;">
+			<div class="card-body">
+				<h5 class="card-title">@download.Game.Name</h5>
+				<p class="card-text">Status: @download.DownloadStatus</p>
+				<p class="card-text">Elapsed: @download.ElapsedFormatted</p>
+				<button class="btn btn-primary" @onclick="() => CancelDownload(download)">Cancel</button>
+			</div>
+		</div>
+	}
+</div>
+
+@code {
+	private const int refreshRateMilliseconds = 1000;
+	private const string ourUri = "/downloads";
+
+	private List<GameDownload> downloads { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		downloads = DownloadTrackerService.GameDownloads;
+		DownloadTrackerService.DownloadStatusChanged += OnDownloadStatusChanged;
+	}
+
+	protected override void OnAfterRender(bool firstRender)
+	{
+		if (firstRender)
+		{
+			var timer = new Timer(RefreshCallback, null, refreshRateMilliseconds, refreshRateMilliseconds);
+		}
+	}
+
+	private async void OnDownloadStatusChanged(object sender, EventArgs e)
+	{
+		await InvokeAsync(StateHasChanged);
+	}
+
+	private async void RefreshCallback(object state)
+	{
+		// Only refresh if we're on this page
+		if (NavigationManager.Uri.EndsWith(ourUri))
+		{
+			downloads = DownloadTrackerService.GameDownloads;
+			await InvokeAsync(StateHasChanged);
+		}
+    }
+
+	private async Task CancelDownload(GameDownload gameDownload)
+	{
+		DownloadTrackerService.CancelDownload(gameDownload);
+	}
+}

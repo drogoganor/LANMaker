@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -12,24 +12,53 @@ namespace LANMaker.Data
     {
         private readonly ManifestService _manifestService;
         private readonly ConfigurationService _configurationService;
+        private readonly DownloadTrackerService _downloadTrackerService;
+        public List<GameDownload> GameDownloads { get; private set; } = new List<GameDownload>();
 
-        public InstallerService(ManifestService manifestService, ConfigurationService configurationService)
+        public InstallerService(ManifestService manifestService, ConfigurationService configurationService, DownloadTrackerService downloadTrackerService)
         {
             _manifestService = manifestService;
             _configurationService = configurationService;
+            _downloadTrackerService = downloadTrackerService;
         }
 
 		public async Task InstallGame(ServerGame game, CancellationToken cancellationToken)
         {
             var installPath = Path.Combine(_manifestService.ConfigurationDirectory, game.Name);
-            var configuration = await _configurationService.GetConfiguration(cancellationToken);
+            var configuration = _configurationService.Configuration;
+
+            // Don't install games twice
+            if (_downloadTrackerService.IsGameInstalling(game))
+            {
+                return;
+            }
 
             if (!await IsGameInstalled(game, installPath, configuration))
             {
                 var gameArchiveStream = await DownloadGameArchive(game, cancellationToken);
-                await ExtractGame(gameArchiveStream, installPath, game);
+
+                _downloadTrackerService.TrackGameInstall(game, cancellationToken);
+                await ExtractGame(gameArchiveStream, installPath, game, cancellationToken);
                 await _configurationService.WriteInstalledGame(game, installPath, cancellationToken);
+
+                // Stop tracking game download
+                _downloadTrackerService.RemoveDownload(game);
             }
+        }
+
+        public async Task DeleteGame(ClientGame game, CancellationToken cancellationToken)
+        {
+            var installPath = Path.Combine(_manifestService.ConfigurationDirectory, game.Name);
+            try
+            {
+                Directory.Delete(installPath, true);
+            }
+            catch
+            {
+                throw;
+            }
+
+            _configurationService.DeleteGame(game, cancellationToken);
         }
 
 		private async Task<bool> IsGameInstalled(ServerGame game, string installPath, Configuration configuration)
@@ -54,7 +83,9 @@ namespace LANMaker.Data
             var memoryStream = new MemoryStream();
             using (var client = new HttpClient())
             {
-                using (var result = await client.GetAsync(game.ZipUrl))
+                _downloadTrackerService.TrackGameDownload(game, client, cancellationToken);
+
+                using (var result = await client.GetAsync(game.ZipUrl, cancellationToken))
                 {
                     if (result.IsSuccessStatusCode)
                     {
@@ -68,7 +99,7 @@ namespace LANMaker.Data
             return memoryStream;
         }
 
-        private async Task ExtractGame(Stream stream, string installPath, ServerGame game)
+        private async Task ExtractGame(Stream stream, string installPath, ServerGame game, CancellationToken cancellationToken)
         {
             if (!Directory.Exists(installPath))
             {

@@ -2,6 +2,7 @@
 
 @using System.Threading
 @using LANMaker.Data
+@inject NavigationManager NavigationManager
 @inject ConfigurationService ConfigurationService
 @inject ManifestService ManifestService
 
@@ -20,11 +21,13 @@ else
 			<label class="form-label" for="manifestUrl">Manifest URL</label>
 			<InputText class="form-control" id="manifestUrl" @bind-Value="configuration.ManifestUrl" />
 		</div>
-			
+
+		@*
 		<div class="mb-3">
 			<label class="form-label" for="storagePath">Custom Storage Path</label>
 			<InputText class="form-control" id="storagePath" @bind-Value="configuration.StoragePath" />
 		</div>
+		*@
 		
 		<div class="mb-3">
 			<button class="btn btn-primary" type="submit">Save</button>
@@ -38,16 +41,19 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		configuration = await ConfigurationService.GetConfiguration(new CancellationToken());
+		await ConfigurationService.GetConfiguration(new CancellationToken());
+		configuration = ConfigurationService.Configuration;
 	}
 
 	private async void HandleValidSubmit()
 	{
 		await ConfigurationService.SaveConfiguration(configuration);
+		await UpdateManifest();
 	}
 
-	private async void UpdateManifest()
+	private async Task UpdateManifest()
 	{
 		await ManifestService.UpdateManifest(new CancellationToken());
+		NavigationManager.NavigateTo("/");
 	}
 }

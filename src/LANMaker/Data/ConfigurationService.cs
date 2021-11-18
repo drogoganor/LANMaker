@@ -10,16 +10,35 @@ namespace LANMaker.Data
 {
 	public class ConfigurationService
 	{
+		public Configuration Configuration { get; private set; }
 		private string configPath => Path.Combine(Directory.GetParent(AppContext.BaseDirectory).FullName, "Resources/config.json");
 
-        public ConfigurationService()
-        {
-        }
+		public async void DeleteGame(ClientGame game, CancellationToken cancellationToken)
+		{
+			if (Configuration == null)
+            {
+				await GetConfiguration(cancellationToken);
+            }
+
+			var installedGame = Configuration.InstalledGames.FirstOrDefault(installedGame => installedGame.Name == game.Name);
+			if (installedGame != null)
+            {
+				var installedGames = Configuration.InstalledGames.ToList();
+				installedGames.Remove(installedGame);
+
+				Configuration.InstalledGames = installedGames.ToArray();
+				await SaveConfiguration(Configuration);
+			}
+		}
 
 		public async Task WriteInstalledGame(ServerGame game, string installPath, CancellationToken cancellationToken)
 		{
-			var configuration = await GetConfiguration(cancellationToken);
-			if (configuration.InstalledGames.Any(installedGame => installedGame.Name == game.Name))
+			if (Configuration == null)
+			{
+				await GetConfiguration(cancellationToken);
+			}
+
+			if (Configuration.InstalledGames.Any(installedGame => installedGame.Name == game.Name))
 			{
 				throw new Exception($"Game already exists in config: {game.Name}");
 			}
@@ -34,25 +53,24 @@ namespace LANMaker.Data
 				Portable = game.Portable,
 			};
 
-			var installedGames = configuration.InstalledGames.ToList();
+			var installedGames = Configuration.InstalledGames.ToList();
 
 			installedGames.Add(installedGame);
 
-			configuration.InstalledGames = installedGames
+			Configuration.InstalledGames = installedGames
 				.OrderBy(installedGame => installedGame.Name)
 				.ToArray();
 
-			await SaveConfiguration(configuration);
+			await SaveConfiguration(Configuration);
 		}
 
-		public async Task<Configuration> GetConfiguration(CancellationToken cancellationToken)
+		public async Task GetConfiguration(CancellationToken cancellationToken)
 		{
 			try
             {
 				using (var stream = new FileStream(configPath, FileMode.Open, FileAccess.Read))
 				{
-					var configuration = await JsonSerializer.DeserializeAsync<Configuration>(stream, cancellationToken: cancellationToken);
-					return configuration;
+					Configuration = await JsonSerializer.DeserializeAsync<Configuration>(stream, cancellationToken: cancellationToken);
 				}
             }
 			catch
@@ -79,5 +97,5 @@ namespace LANMaker.Data
 				throw;
 			}
 		}
-	}
+    }
 }
