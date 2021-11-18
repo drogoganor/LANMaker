@@ -3,12 +3,17 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using static System.Environment;
 
 namespace LANMaker.Data
 {
 	public class ConfigurationService
 	{
 		private string configPath => Path.Combine(Directory.GetParent(AppContext.BaseDirectory).FullName, "Resources/config.json");
+
+        public ConfigurationService()
+        {
+        }
 
 		public async Task<Configuration> GetConfiguration()
 		{
@@ -20,7 +25,7 @@ namespace LANMaker.Data
 					return configuration;
 				}
             }
-			catch (Exception ex)
+			catch
             {
 				throw;
 			}
@@ -39,7 +44,7 @@ namespace LANMaker.Data
                 using var configFile = new StreamWriter(configPath);
                 await configFile.WriteAsync(json);
             }
-			catch (Exception ex)
+			catch
 			{
 				throw;
 			}

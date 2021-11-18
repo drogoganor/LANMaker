@@ -14,8 +14,27 @@
 else
 {
 	<EditForm Model="@configuration" OnValidSubmit="@HandleValidSubmit">
-		<InputText id="manifestUrl" @bind-Value="configuration.ManifestUrl" />
-		<button class="btn btn-primary" type="submit">Save</button>
+		<div class="form-group">
+			<div class="row">
+				<div class="col-xs-4">
+					<label for="manifestUrl">Manifest URL</label>
+					<InputText class="form-control" id="manifestUrl" @bind-Value="configuration.ManifestUrl" />
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-xs-4">
+					<label for="storagePath">Custom Storage Path</label>
+					<InputText class="form-control" id="storagePath" @bind-Value="configuration.StoragePath" />
+				</div>
+			</div>
+		
+			<div class="row">
+				<div class="col-xs-4">
+					<button class="btn btn-primary" type="submit">Save</button>
+				</div>
+			</div>
+		</div>
 	</EditForm>
 }
 

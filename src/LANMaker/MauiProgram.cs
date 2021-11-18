@@ -5,6 +5,7 @@ using Microsoft.Maui.Hosting;
 using Microsoft.Maui.Controls.Compatibility;
 using Microsoft.Maui.Controls.Hosting;
 using LANMaker.Data;
+using System;
 
 namespace LANMaker
 {
@@ -21,8 +22,11 @@ namespace LANMaker
 					fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 				});
 
+			Startup.CreateWorkingDirectory();
+
 			builder.Services.AddBlazorWebView();
-			builder.Services.AddSingleton<ConfigurationService>();
+			builder.Services.AddSingleton<ManifestService>()
+							.AddScoped<ConfigurationService>();
 
 			return builder.Build();
 		}
