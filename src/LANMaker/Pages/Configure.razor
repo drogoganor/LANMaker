@@ -1,7 +1,9 @@
 ﻿@page "/configure"
 
+@using System.Threading
 @using LANMaker.Data
 @inject ConfigurationService ConfigurationService
+@inject ManifestService ManifestService
 
 <h1>Settings</h1>
 
@@ -26,6 +28,7 @@ else
 		
 		<div class="mb-3">
 			<button class="btn btn-primary" type="submit">Save</button>
+			<button class="btn btn-secondary" @onclick="UpdateManifest">Refresh Manifest</button>
 		</div>
 	</EditForm>
 }
@@ -35,11 +38,16 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		configuration = await ConfigurationService.GetConfiguration();
+		configuration = await ConfigurationService.GetConfiguration(new CancellationToken());
 	}
 
 	private async void HandleValidSubmit()
 	{
 		await ConfigurationService.SaveConfiguration(configuration);
+	}
+
+	private async void UpdateManifest()
+	{
+		await ManifestService.UpdateManifest(new CancellationToken());
 	}
 }

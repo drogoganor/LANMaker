@@ -3,11 +3,11 @@
 @using LANMaker.Data
 @using System.Threading
 @inject ManifestService ManifestService
+@inject InstallerService InstallerService
 
 <h1>Owned Games</h1>
 
 <p>These are all the games available for your selected manifest.</p>
-
 
 @if (manifest == null)
 {
@@ -15,15 +15,17 @@
 }
 else
 {
-	<div>
+	<div class="d-flex">
 		@foreach (var game in manifest.Games)
 		{
-			<div class="card" style="width: 18rem;">
-				<img src="@game.PosterUrl" class="card-img-top" alt="@game.Name Poster">
+			<div class="card me-2" style="width: 18rem;">
+				<img src="@game.PosterUrl" class="card-img-top" alt="@game.Name Poster" style="height: 18rem;">
 				<div class="card-body">
 					<h5 class="card-title">@game.Name</h5>
+					<a href="#" class="btn btn-primary" @onclick="() => Install(game)">Install</a>
+					@*
 					<p class="card-text">@game.Description</p>
-					<a href="#" class="btn btn-primary">Download</a>
+					*@
 				</div>
 			</div>
 		}
@@ -35,6 +37,11 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		manifest = await ManifestService.UpdateLatestManifest(new CancellationToken());
+		manifest = await ManifestService.GetManifest(new CancellationToken());
+	}
+
+	private async Task Install(ServerGame game)
+	{
+		await InstallerService.InstallGame(game, new CancellationToken());
 	}
 }

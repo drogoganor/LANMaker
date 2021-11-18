@@ -21,7 +21,14 @@ namespace LANMaker.Data
             _configurationService = configurationService;
         }
 
-        public async Task<Manifest> UpdateLatestManifest(CancellationToken stoppingToken)
+        public async Task UpdateManifest(CancellationToken stoppingToken)
+        {
+            DeleteManifest();
+            var manifest = await GetManifest(stoppingToken);
+            await SaveManifest(manifest);
+        }
+
+        public async Task<Manifest> GetManifest(CancellationToken stoppingToken)
         {
             CreateManifestDirectory();
 
@@ -33,10 +40,10 @@ namespace LANMaker.Data
                 return manifest;
             }
 
-            return await GetManifest();
+            return await ReadManifest();
         }
 
-        public async Task<Manifest> GetManifest()
+        private async Task<Manifest> ReadManifest()
         {
             try
             {
@@ -49,6 +56,21 @@ namespace LANMaker.Data
             catch
             {
                 throw;
+            }
+        }
+
+        public void DeleteManifest()
+        {
+            if (File.Exists(ManifestPath))
+            {
+                try
+                {
+                    File.Delete(ManifestPath);
+                }
+                catch
+                {
+                    throw;
+                }
             }
         }
 
@@ -103,7 +125,7 @@ namespace LANMaker.Data
         /// <returns></returns>
         private async Task<Manifest> FetchManifest(CancellationToken stoppingToken)
         {
-            var configuration = await _configurationService.GetConfiguration();
+            var configuration = await _configurationService.GetConfiguration(stoppingToken);
             var manifestUrl = configuration.ManifestUrl;
             var manifestStream = await DownloadTextFile(manifestUrl, stoppingToken);
             Manifest manifest;

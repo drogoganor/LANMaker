@@ -22,11 +22,11 @@ namespace LANMaker
 					fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 				});
 
-			Startup.CreateWorkingDirectory();
-
 			builder.Services.AddBlazorWebView();
 			builder.Services.AddSingleton<ManifestService>()
-							.AddScoped<ConfigurationService>();
+							.AddScoped<ConfigurationService>()
+							.AddScoped<InstallerService>()
+							.AddScoped<GameRunService>();
 
 			return builder.Build();
 		}

@@ -1,0 +1,41 @@
+﻿@page "/counter"
+
+@using System.Threading
+@using LANMaker.Data
+@inject ConfigurationService ConfigurationService
+@inject GameRunService GameRunService
+
+<h1>Installed Games</h1>
+
+@if (configuration == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+	<div class="d-flex">
+		@foreach (var game in configuration.InstalledGames)
+		{
+			<div class="card mr-2" style="width: 18rem;">
+				<div class="card-body">
+					<h5 class="card-title">@game.Name</h5>
+					<a href="#" class="btn btn-primary" @onclick="() => PlayGame(game)">Play</a>
+				</div>
+			</div>
+		}
+	</div>
+}
+
+@code {
+	private Configuration configuration;
+
+	protected override async Task OnInitializedAsync()
+	{
+		configuration = await ConfigurationService.GetConfiguration(new CancellationToken());
+	}
+
+	private async Task PlayGame(ClientGame game)
+	{
+		await GameRunService.PlayGame(game);
+	}
+}
