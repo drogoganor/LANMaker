@@ -18,7 +18,7 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Add MAUI workloads
-      run: dotnet workload install maui-windows macos
+      run: dotnet workload install maui-windows microsoft-ios-sdk-full macos
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
