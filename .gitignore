@@ -1,4 +1,4 @@
-src/.vs/
+.vs/
 *.user
-src/LANMaker/bin/
-src/LANMaker/obj/
+LANMaker/bin/
+LANMaker/obj/
