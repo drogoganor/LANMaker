@@ -1,5 +1,3 @@
-using System;
-
 namespace LANMaker.Data
 {
 	/// <summary>

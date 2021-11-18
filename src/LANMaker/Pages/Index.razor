@@ -2,52 +2,51 @@
 
 @using LANMaker.Data
 @using System.Threading
+@inject StateContainer StateContainer
+@inject CombinedGameService CombinedGameService
 @inject NavigationManager NavigationManager
 @inject ManifestService ManifestService
-@inject InstallerService InstallerService
 
-<h1>Owned Games</h1>
+<h1>Store</h1>
 
-<p>These are all the games available for your selected manifest.</p>
-
-@if (manifest == null)
+@if (state == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
 	<div class="d-flex flex-wrap">
-		@foreach (var game in manifest.Games)
+		@foreach (var game in state.Games)
 		{
-			<div class="card me-2 mb-2" style="width: 18rem;">
-				<img src="@game.PosterUrl" class="card-img-top" alt="@game.Name Poster" style="height: 18rem;">
-				<div class="card-body">
-					<h5 class="card-title">@game.Name</h5>
-					<button class="btn btn-primary" @onclick="() => Install(game)">Install</button>
-					@*
-					<p class="card-text">@game.Description</p>
-					*@
-				</div>
-			</div>
+			<GameCard Game=game IsInstalledView=false />
 		}
 	</div>
 }
 
 @code {
-	private Manifest manifest;
+	private StateContainer state;
 
 	protected override async Task OnInitializedAsync()
 	{
-		manifest = await ManifestService.GetManifest(new CancellationToken());
+		var configuration = await ConfigurationService.GetConfiguration(new CancellationToken());
+		if (configuration == null)
+		{
+			NavigationManager.NavigateTo("/configure");
+		}
+
+		StateContainer.Configuration = configuration;
+
+		var manifest = await ManifestService.GetManifest(new CancellationToken());
 		if (manifest == null)
 		{
 			NavigationManager.NavigateTo("/configure");
 		}
-	}
 
-	private async Task Install(ServerGame game)
-	{
-		NavigationManager.NavigateTo("/downloads");
-		await InstallerService.InstallGame(game, new CancellationToken());
+		StateContainer.Manifest = manifest;
+
+		var games = CombinedGameService.GetCombinedGames();
+		StateContainer.Games = games;
+
+		state = StateContainer;
 	}
 }

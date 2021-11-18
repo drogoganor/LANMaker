@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -9,16 +8,16 @@ namespace LANMaker.Data
 	public class DownloadTrackerService
     {
         public event EventHandler DownloadStatusChanged;
-        public List<GameDownload> GameDownloads { get; private set; } = new List<GameDownload>();
+        private readonly StateContainer state;
 
-        public DownloadTrackerService()
+        public DownloadTrackerService(StateContainer state)
         {
-
+            this.state = state;
         }
 
         public bool IsGameInstalling(ServerGame game)
         {
-            if (GameDownloads.Any(gameDownload => gameDownload.Game.Name == game.Name))
+            if (state.GameDownloads.Any(gameDownload => gameDownload.Game.Name == game.Name))
             {
                 return true;
             }
@@ -37,14 +36,14 @@ namespace LANMaker.Data
                 DownloadStatus = GameDownloadStatus.Downloading,
             };
 
-            GameDownloads.Add(gameDownload);
+            state.GameDownloads.Add(gameDownload);
             DownloadStatusChanged?.Invoke(this, null);
         }
 
         public void TrackGameInstall(ServerGame game, CancellationToken cancellationToken)
         {
             //var originalDateTime = RemoveDownload(game);
-            var download = GameDownloads.First(gameDownload => gameDownload.Game.Name == game.Name);
+            var download = state.GameDownloads.First(gameDownload => gameDownload.Game.Name == game.Name);
             download.DownloadStatus = GameDownloadStatus.Installing;
             download.HttpClient = null;
             DownloadStatusChanged?.Invoke(this, null);
@@ -64,7 +63,7 @@ namespace LANMaker.Data
         public DateTime RemoveDownload(ServerGame game)
         {
             var existingDownload = GetGameDownload(game);
-            GameDownloads.Remove(existingDownload);
+            state.GameDownloads.Remove(existingDownload);
             DownloadStatusChanged?.Invoke(this, null);
             return existingDownload.DownloadTime;
         }
@@ -76,13 +75,13 @@ namespace LANMaker.Data
                 gameDownload.CancellationToken.ThrowIfCancellationRequested();
             }
 
-            GameDownloads.Remove(gameDownload);
+            state.GameDownloads.Remove(gameDownload);
             DownloadStatusChanged?.Invoke(this, null);
         }
 
         private GameDownload GetGameDownload(ServerGame game)
         {
-            return GameDownloads.FirstOrDefault(gameDownload => gameDownload.Game.Name == game.Name);
+            return state.GameDownloads.FirstOrDefault(gameDownload => gameDownload.Game.Name == game.Name);
         }
 	}
 }

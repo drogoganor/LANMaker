@@ -1,0 +1,120 @@
+﻿@page "/game/{GameName}"
+
+@using LANMaker.Data
+@using System.Threading
+@inject StateContainer StateContainer
+@inject CombinedGameService CombinedGameService
+@inject NavigationManager NavigationManager
+@inject GameRunService GameRunService
+@inject InstallerService InstallerService
+
+@if (game == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+	<div class="d-flex">
+		<div class="flex-shrink-0">
+			<img src="@game.ServerGame.PosterUrl" alt="@game.ServerGame.Name Poster" style="width: 18rem; height: 18rem; object-fit: contain;">
+		</div>
+		<div class="flex-grow-1 ms-3">
+			<h2 class="mt-0">@game.ServerGame.Name</h2>
+			<p>@game.ServerGame.Description</p>
+			
+			<p>
+				<div class="row justify-content-start">
+					<div class="col-3">
+						Publisher
+					</div>
+					<div class="col-5">
+						@game.ServerGame.Publisher
+					</div>
+				</div>
+				<div class="row justify-content-start">
+					<div class="col-3">
+						Year Published
+					</div>
+					<div class="col-5">
+						@game.ServerGame.YearPublished
+					</div>
+				</div>
+				<div class="row justify-content-start">
+					<div class="col-3">
+						Multiplayer
+					</div>
+					<div class="col-5">
+						@game.ServerGame.Multiplayer
+					</div>
+				</div>
+				<div class="row justify-content-start">
+					<div class="col-3">
+						Portable
+					</div>
+					<div class="col-5">
+						@game.ServerGame.Portable
+					</div>
+				</div>
+			</p>
+			
+			<p>
+				@if (game.IsInstalled)
+				{
+					<button class="btn btn-success me-2" @onclick="() => PlayGame(game.ClientGame)">Play</button>
+					<button class="btn btn-danger me-2" @onclick="() => DeleteGame(game.ClientGame)">Uninstall</button>
+					<button class="btn btn-secondary me-2" @onclick="() => ViewInExplorer(game.ClientGame)">View Files</button>
+				}
+				else
+				{
+					<button class="btn btn-primary me-2" @onclick="() => Install(game.ServerGame)">Install</button>
+				}
+			</p>
+		</div>
+	</div>
+}
+
+@code {
+	[Parameter]
+	public string GameName { get; set; }
+
+	private StateContainer state;
+	private CombinedGame game;
+	private bool IsInstalledView = true;
+
+	protected override async Task OnInitializedAsync()
+	{
+		state = StateContainer;
+
+		if (!string.IsNullOrWhiteSpace(GameName))
+		{
+			game = state.Games.First(combinedGame => combinedGame.ServerGame.Name == GameName);
+		}
+	}
+
+	// TODO: Repeated in GameCard.razor
+	private async Task Install(ServerGame game)
+	{
+		NavigationManager.NavigateTo("/downloads");
+		await InstallerService.InstallGame(game, new CancellationToken());
+	}
+
+	private async Task ViewInExplorer(ClientGame game)
+	{
+		InstallerService.ViewInExplorer(game);
+	}
+
+	private async Task PlayGame(ClientGame game)
+	{
+		await GameRunService.PlayGame(game);
+	}
+
+	private async Task DeleteGame(ClientGame game)
+	{
+		await InstallerService.DeleteGame(game, new CancellationToken());
+	}
+
+	private async Task ViewGame(string name)
+	{
+		NavigationManager.NavigateTo($"/game/{name}");
+	}
+}

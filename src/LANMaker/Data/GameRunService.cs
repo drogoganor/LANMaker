@@ -7,13 +7,7 @@ namespace LANMaker.Data
 {
 	public class GameRunService
 	{
-		private readonly ManifestService _manifestService;
 		private Process process;
-
-        public GameRunService(ManifestService manifestService)
-        {
-			_manifestService = manifestService;
-        }
 
 		public async Task PlayGame(ClientGame game)
 		{
@@ -30,7 +24,7 @@ namespace LANMaker.Data
                 }
             }
 
-			var workingDirectory = Path.Combine(_manifestService.ConfigurationDirectory, game.Name);
+			var workingDirectory = Path.Combine(ManifestService.ConfigurationDirectory, game.Name);
 			var processPath = Path.Combine(workingDirectory, game.ExePath);
 
 			if (!File.Exists(processPath))

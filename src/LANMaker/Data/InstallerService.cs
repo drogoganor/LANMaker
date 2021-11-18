@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -10,22 +10,21 @@ namespace LANMaker.Data
 {
 	public class InstallerService
     {
-        private readonly ManifestService _manifestService;
-        private readonly ConfigurationService _configurationService;
         private readonly DownloadTrackerService _downloadTrackerService;
-        public List<GameDownload> GameDownloads { get; private set; } = new List<GameDownload>();
+        private readonly ConfigurationService _configurationService;
+        private readonly StateContainer state;
 
-        public InstallerService(ManifestService manifestService, ConfigurationService configurationService, DownloadTrackerService downloadTrackerService)
+        public InstallerService(StateContainer state, ConfigurationService configurationService, DownloadTrackerService downloadTrackerService)
         {
-            _manifestService = manifestService;
+            this.state = state;
             _configurationService = configurationService;
             _downloadTrackerService = downloadTrackerService;
         }
 
 		public async Task InstallGame(ServerGame game, CancellationToken cancellationToken)
         {
-            var installPath = Path.Combine(_manifestService.ConfigurationDirectory, game.Name);
-            var configuration = _configurationService.Configuration;
+            var installPath = Path.Combine(ManifestService.ConfigurationDirectory, game.Name);
+            var configuration = state.Configuration;
 
             // Don't install games twice
             if (_downloadTrackerService.IsGameInstalling(game))
@@ -48,7 +47,7 @@ namespace LANMaker.Data
 
         public async Task DeleteGame(ClientGame game, CancellationToken cancellationToken)
         {
-            var installPath = Path.Combine(_manifestService.ConfigurationDirectory, game.Name);
+            var installPath = Path.Combine(ManifestService.ConfigurationDirectory, game.Name);
             try
             {
                 Directory.Delete(installPath, true);
@@ -59,6 +58,12 @@ namespace LANMaker.Data
             }
 
             _configurationService.DeleteGame(game, cancellationToken);
+        }
+
+        public static void ViewInExplorer(ClientGame game)
+        {
+            var installPath = Path.Combine(ManifestService.ConfigurationDirectory, game.Name);
+            Process.Start("explorer.exe", installPath);
         }
 
 		private async Task<bool> IsGameInstalled(ServerGame game, string installPath, Configuration configuration)

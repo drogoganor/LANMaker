@@ -2,6 +2,7 @@
 
 @using System.Threading
 @using LANMaker.Data
+@inject StateContainer StateContainer
 @inject NavigationManager NavigationManager
 @inject ConfigurationService ConfigurationService
 @inject ManifestService ManifestService
@@ -41,8 +42,7 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		await ConfigurationService.GetConfiguration(new CancellationToken());
-		configuration = ConfigurationService.Configuration;
+		configuration = StateContainer.Configuration;
 	}
 
 	private async void HandleValidSubmit()

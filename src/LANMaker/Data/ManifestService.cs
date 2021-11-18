@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Hosting;
-using System;
+﻿using System;
 using System.IO;
 using System.Net.Http;
 using System.Text.Json;
@@ -11,26 +10,21 @@ namespace LANMaker.Data
 {
     public class ManifestService
     {
-        public string ConfigurationDirectory => Path.Combine(Environment.GetFolderPath(SpecialFolder.MyDocuments), "LANMaker");
-        public string ManifestPath => Path.Combine(ConfigurationDirectory, "manifest.json");
+        public static string ConfigurationDirectory => Path.Combine(Environment.GetFolderPath(SpecialFolder.MyDocuments), "LANMaker");
+        public static string ManifestPath => Path.Combine(ConfigurationDirectory, "manifest.json");
 
         private readonly ConfigurationService _configurationService;
+        private readonly StateContainer state;
 
-        public ManifestService(ConfigurationService configurationService)
+        public ManifestService(StateContainer state, ConfigurationService configurationService)
         {
+            this.state = state;
             _configurationService = configurationService;
-        }
-
-        public async Task UpdateManifest(CancellationToken stoppingToken)
-        {
-            DeleteManifest();
-            var manifest = await GetManifest(stoppingToken);
-            await SaveManifest(manifest);
         }
 
         public async Task<Manifest> GetManifest(CancellationToken stoppingToken)
         {
-            CreateManifestDirectory();
+			CreateManifestDirectory();
 
             if (!LocalManifestExists())
             {
@@ -43,79 +37,25 @@ namespace LANMaker.Data
             return await ReadManifest();
         }
 
-        private async Task<Manifest> ReadManifest()
+        public async Task UpdateManifest(CancellationToken stoppingToken)
+        {
+            DeleteManifest();
+            var manifest = await GetManifest(stoppingToken);
+            await SaveManifest(manifest);
+        }
+
+        private static async Task<Manifest> ReadManifest()
         {
             try
             {
-                using (var stream = new FileStream(ManifestPath, FileMode.Open, FileAccess.Read))
-                {
-                    var manifest = await JsonSerializer.DeserializeAsync<Manifest>(stream);
-                    return manifest;
-                }
+                using var stream = new FileStream(ManifestPath, FileMode.Open, FileAccess.Read);
+                var manifest = await JsonSerializer.DeserializeAsync<Manifest>(stream);
+                return manifest;
             }
             catch
             {
                 throw;
             }
-        }
-
-        public void DeleteManifest()
-        {
-            if (File.Exists(ManifestPath))
-            {
-                try
-                {
-                    File.Delete(ManifestPath);
-                }
-                catch
-                {
-                    throw;
-                }
-            }
-        }
-
-        public async Task SaveManifest(Manifest manifest)
-        {
-            try
-            {
-                var json = JsonSerializer.Serialize(manifest, new JsonSerializerOptions
-                {
-                    AllowTrailingCommas = true,
-                    WriteIndented = true,
-                });
-
-                using var manifestFile = new StreamWriter(ManifestPath);
-                await manifestFile.WriteAsync(json);
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        private void CreateManifestDirectory()
-        {
-            if (!Directory.Exists(ConfigurationDirectory))
-            {
-                try
-                {
-                    Directory.CreateDirectory(ConfigurationDirectory);
-                }
-                catch
-                {
-                    throw;
-                }
-            }
-        }
-
-        private bool LocalManifestExists()
-        {
-            if (!File.Exists(ManifestPath))
-            {
-                return false;
-            }
-
-            return true;
         }
 
         /// <summary>
@@ -125,7 +65,7 @@ namespace LANMaker.Data
         /// <returns></returns>
         private async Task<Manifest> FetchManifest(CancellationToken stoppingToken)
         {
-            var configuration = _configurationService.Configuration;
+            var configuration = state.Configuration;
             if (configuration == null)
             {
                 return null;
@@ -144,6 +84,68 @@ namespace LANMaker.Data
             }
 
             return manifest;
+        }
+
+        private static void DeleteManifest()
+        {
+            if (File.Exists(ManifestPath))
+            {
+                try
+                {
+                    File.Delete(ManifestPath);
+                }
+                catch
+                {
+                    throw;
+                }
+            }
+        }
+
+        private async Task SaveManifest(Manifest newManifest)
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(newManifest, new JsonSerializerOptions
+                {
+                    AllowTrailingCommas = true,
+                    WriteIndented = true,
+                });
+
+                using var manifestFile = new StreamWriter(ManifestPath);
+                await manifestFile.WriteAsync(json);
+
+                // Update state with new manifest
+                state.Manifest = newManifest;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        private static void CreateManifestDirectory()
+        {
+            if (!Directory.Exists(ConfigurationDirectory))
+            {
+                try
+                {
+                    Directory.CreateDirectory(ConfigurationDirectory);
+                }
+                catch
+                {
+                    throw;
+                }
+            }
+        }
+
+        private static bool LocalManifestExists()
+        {
+            if (!File.Exists(ManifestPath))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private static async Task<string> DownloadTextFile(string url, CancellationToken stoppingToken)

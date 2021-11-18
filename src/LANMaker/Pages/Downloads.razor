@@ -2,6 +2,7 @@
 
 @using System.Threading
 @using LANMaker.Data
+@inject StateContainer StateContainer
 @inject NavigationManager NavigationManager
 @inject DownloadTrackerService DownloadTrackerService
 
@@ -29,7 +30,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		downloads = DownloadTrackerService.GameDownloads;
+		downloads = StateContainer.GameDownloads;
 		DownloadTrackerService.DownloadStatusChanged += OnDownloadStatusChanged;
 	}
 
@@ -51,7 +52,7 @@
 		// Only refresh if we're on this page
 		if (NavigationManager.Uri.EndsWith(ourUri))
 		{
-			downloads = DownloadTrackerService.GameDownloads;
+			downloads = StateContainer.GameDownloads;
 			await InvokeAsync(StateHasChanged);
 		}
     }

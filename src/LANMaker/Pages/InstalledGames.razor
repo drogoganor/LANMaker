@@ -1,56 +1,29 @@
 ﻿@page "/installed"
 
-@using System.Threading
 @using LANMaker.Data
-@inject NavigationManager NavigationManager
-@inject ConfigurationService ConfigurationService
-@inject InstallerService InstallerService
-@inject GameRunService GameRunService
+@inject StateContainer StateContainer
 
 <h1>Installed Games</h1>
 
-@if (configuration == null)
+@if (state == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
 	<div class="d-flex flex-wrap">
-		@foreach (var game in configuration.InstalledGames)
+		@foreach (var game in state.Games)
 		{
-			<div class="card me-2 mb-2" style="width: 18rem;">
-				<div class="card-body">
-					<h5 class="card-title">@game.Name</h5>
-					<button class="btn btn-primary" @onclick="() => PlayGame(game)">Play</button>
-					<button class="btn btn-secondary" @onclick="() => DeleteGame(game)">Uninstall</button>
-				</div>
-			</div>
+			<GameCard Game=game IsInstalledView=true />
 		}
 	</div>
 }
 
 @code {
-	private Configuration configuration;
+	private StateContainer state;
 
 	protected override async Task OnInitializedAsync()
 	{
-		await ConfigurationService.GetConfiguration(new CancellationToken());
-		configuration = ConfigurationService.Configuration;
-	}
-
-	private async Task PlayGame(ClientGame game)
-	{
-		await GameRunService.PlayGame(game);
-	}
-
-	private async Task DeleteGame(ClientGame game)
-	{
-		await InstallerService.DeleteGame(game, new CancellationToken());
-
-		// Navigate to available games if last game uninstalled.
-		if (ConfigurationService.Configuration.InstalledGames.Length == 0)
-		{
-			NavigationManager.NavigateTo("/");
-		}
+		state = StateContainer;
 	}
 }

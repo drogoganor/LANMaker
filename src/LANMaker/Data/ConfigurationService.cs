@@ -4,41 +4,51 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Environment;
 
 namespace LANMaker.Data
 {
 	public class ConfigurationService
 	{
-		public Configuration Configuration { get; private set; }
-		private string configPath => Path.Combine(Directory.GetParent(AppContext.BaseDirectory).FullName, "Resources/config.json");
+		private static string ConfigPath => Path.Combine(Directory.GetParent(AppContext.BaseDirectory).FullName, "Resources/config.json");
+		private readonly StateContainer state;
+
+		public ConfigurationService(StateContainer state)
+		{
+			this.state = state;
+		}
+
+		public static async Task<Configuration> GetConfiguration(CancellationToken cancellationToken)
+		{
+			try
+			{
+				using var stream = new FileStream(ConfigPath, FileMode.Open, FileAccess.Read);
+				return await JsonSerializer.DeserializeAsync<Configuration>(stream, cancellationToken: cancellationToken);
+			}
+			catch
+			{
+				throw;
+			}
+		}
 
 		public async void DeleteGame(ClientGame game, CancellationToken cancellationToken)
 		{
-			if (Configuration == null)
-            {
-				await GetConfiguration(cancellationToken);
-            }
+			var configuration = state.Configuration;
 
-			var installedGame = Configuration.InstalledGames.FirstOrDefault(installedGame => installedGame.Name == game.Name);
+			var installedGame = configuration.InstalledGames.FirstOrDefault(installedGame => installedGame.Name == game.Name);
 			if (installedGame != null)
             {
-				var installedGames = Configuration.InstalledGames.ToList();
+				var installedGames = configuration.InstalledGames.ToList();
 				installedGames.Remove(installedGame);
 
-				Configuration.InstalledGames = installedGames.ToArray();
-				await SaveConfiguration(Configuration);
+				configuration.InstalledGames = installedGames.ToArray();
+				await SaveConfiguration(configuration);
 			}
 		}
 
 		public async Task WriteInstalledGame(ServerGame game, string installPath, CancellationToken cancellationToken)
 		{
-			if (Configuration == null)
-			{
-				await GetConfiguration(cancellationToken);
-			}
-
-			if (Configuration.InstalledGames.Any(installedGame => installedGame.Name == game.Name))
+			var configuration = state.Configuration;
+			if (configuration.InstalledGames.Any(installedGame => installedGame.Name == game.Name))
 			{
 				throw new Exception($"Game already exists in config: {game.Name}");
 			}
@@ -53,49 +63,37 @@ namespace LANMaker.Data
 				Portable = game.Portable,
 			};
 
-			var installedGames = Configuration.InstalledGames.ToList();
+			var installedGames = configuration.InstalledGames.ToList();
 
 			installedGames.Add(installedGame);
 
-			Configuration.InstalledGames = installedGames
+			configuration.InstalledGames = installedGames
 				.OrderBy(installedGame => installedGame.Name)
 				.ToArray();
 
-			await SaveConfiguration(Configuration);
+			await SaveConfiguration(configuration);
 		}
 
-		public async Task GetConfiguration(CancellationToken cancellationToken)
-		{
-			try
-            {
-				using (var stream = new FileStream(configPath, FileMode.Open, FileAccess.Read))
-				{
-					Configuration = await JsonSerializer.DeserializeAsync<Configuration>(stream, cancellationToken: cancellationToken);
-				}
-            }
-			catch
-            {
-				throw;
-			}
-		}
-
-		public async Task SaveConfiguration(Configuration configuration)
+		public async Task SaveConfiguration(Configuration newConfiguration)
 		{
 			try
 			{
-				var json = JsonSerializer.Serialize(configuration, new JsonSerializerOptions
+				var json = JsonSerializer.Serialize(newConfiguration, new JsonSerializerOptions
                 {
 					AllowTrailingCommas = true,
 					WriteIndented = true,
                 });
 
-                using var configFile = new StreamWriter(configPath);
+                using var configFile = new StreamWriter(ConfigPath);
                 await configFile.WriteAsync(json);
-            }
+
+				// Update state with new configuration
+				state.Configuration = newConfiguration;
+			}
 			catch
 			{
 				throw;
 			}
 		}
-    }
+	}
 }
