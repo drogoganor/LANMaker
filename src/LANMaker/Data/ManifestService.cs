@@ -106,18 +106,27 @@ namespace LANMaker.Data
             var configuration = await _configurationService.GetConfiguration();
             var manifestUrl = configuration.ManifestUrl;
             var manifestStream = await DownloadTextFile(manifestUrl, stoppingToken);
-            var manifest = await JsonSerializer.DeserializeAsync<Manifest>(manifestStream, cancellationToken: stoppingToken);
+            Manifest manifest;
+            try
+            {
+                manifest = JsonSerializer.Deserialize<Manifest>(manifestStream);
+            }
+            catch
+            {
+                throw;
+            }
+
             return manifest;
         }
 
-        private static async Task<Stream> DownloadTextFile(string url, CancellationToken stoppingToken)
+        private static async Task<string> DownloadTextFile(string url, CancellationToken stoppingToken)
         {
             using (var client = new HttpClient())
             {
                 using var result = await client.GetAsync(url, stoppingToken);
                 if (result.IsSuccessStatusCode)
                 {
-                    return await result.Content.ReadAsStreamAsync(stoppingToken);
+                    return await result.Content.ReadAsStringAsync(stoppingToken);
                 }
             }
 

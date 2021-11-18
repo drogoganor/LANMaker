@@ -1,8 +1,5 @@
 ﻿@inherits LayoutComponentBase
 
-@using LANMaker.Data
-@inject ManifestService ManifestService
-
 <div class="page">
 	<div class="sidebar">
 		<NavMenu />
@@ -18,12 +15,3 @@
 		</article>
 	</main>
 </div>
-
-@code {
-	private Manifest manifest;
-
-	protected override async Task OnInitializedAsync()
-	{
-		manifest = await ManifestService.UpdateLatestManifest(new CancellationToken());
-	}
-}

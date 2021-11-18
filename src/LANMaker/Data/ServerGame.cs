@@ -12,6 +12,7 @@ namespace LANMaker.Data
         public string Version { get; set; }
         public bool Multiplayer { get; set; }
         public bool Portable { get; set; } = true;
+        public string PosterUrl { get; set; }
         public string ZipUrl { get; set; }
         public string[] ScreenshotUrls { get; set; }
         public string Description { get; set; }

@@ -1,7 +1,40 @@
 ﻿@page "/"
 
-<h1>Hello, world!</h1>
+@using LANMaker.Data
+@using System.Threading
+@inject ManifestService ManifestService
 
-Welcome to your new app.
+<h1>Owned Games</h1>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<p>These are all the games available for your selected manifest.</p>
+
+
+@if (manifest == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+	<div>
+		@foreach (var game in manifest.Games)
+		{
+			<div class="card" style="width: 18rem;">
+				<img src="@game.PosterUrl" class="card-img-top" alt="@game.Name Poster">
+				<div class="card-body">
+					<h5 class="card-title">@game.Name</h5>
+					<p class="card-text">@game.Description</p>
+					<a href="#" class="btn btn-primary">Download</a>
+				</div>
+			</div>
+		}
+	</div>
+}
+
+@code {
+	private Manifest manifest;
+
+	protected override async Task OnInitializedAsync()
+	{
+		manifest = await ManifestService.UpdateLatestManifest(new CancellationToken());
+	}
+}

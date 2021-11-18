@@ -1,15 +1,16 @@
 {
   "Games": [
     {
-      "Name": "Dark Forces",
-      "Version": "TheForceEngine-v0_02_001-129-gbc44570",
-      "ZipUrl": "http://drogoganor.net/lan/Dark%20Forces/TheForceEngine-v0_02_001-129-gbc44570.zip",
+      "Name": "Enigma (Windows)",
+      "Version": "Enigma-1.30-windows10",
+      "ZipUrl": "http://drogoganor.net/lan/Enigma/Enigma-1.30-windows10.zip",
       "Portable": true,
+      "PosterUrl": "http://drogoganor.net/lan/Enigma/poster.png",
       "ScreenshotUrls": [],
       "Multiplayer": false,
-      "Description": "Star Wars: Dark Forces is a first-person shooter video game developed and published by LucasArts. It was released in 1995 for MS-DOS and Macintosh.",
-      "Publisher": "LucasArts",
-      "YearPublished": 1995
+      "Description": "Open-source clone of the popular marble rolling game Oxyd.",
+      "Publisher": "Daniel Heck",
+      "YearPublished": 2003
     }
   ]
 }
