@@ -1,3 +1,5 @@
+using System;
+
 namespace LANMaker.Data
 {
 	/// <summary>
@@ -6,7 +8,8 @@ namespace LANMaker.Data
 	public class Configuration
 	{
 		public string ManifestUrl { get; set; }
+		public int TimeoutMinutes { get; set; } = 10;
 		public string StoragePath { get; set; }
-		public ClientGame[] InstalledGames { get; set; }
+		public ClientGame[] InstalledGames { get; set; } = Array.Empty<ClientGame>();
 	}
 }

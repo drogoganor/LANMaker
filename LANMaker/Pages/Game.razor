@@ -2,11 +2,13 @@
 
 @using LANMaker.Data
 @using System.Threading
+@using System.IO
 @inject StateContainer StateContainer
 @inject CombinedGameService CombinedGameService
 @inject NavigationManager NavigationManager
 @inject GameRunService GameRunService
 @inject InstallerService InstallerService
+@inject ConfigurationService ConfigurationService
 
 @if (game == null)
 {
@@ -16,10 +18,10 @@ else
 {
 	<div class="d-flex">
 		<div class="flex-shrink-0">
-			<img src="@game.ServerGame.PosterUrl" alt="@game.ServerGame.Name Poster" style="width: 18rem; height: 18rem; object-fit: contain;">
+			<img src="@PosterUrl(game.ServerGame)" alt="@game.ServerGame.Title Poster" style="width: 18rem; height: 18rem; object-fit: contain;">
 		</div>
 		<div class="flex-grow-1 ms-3">
-			<h2 class="mt-0">@game.ServerGame.Name</h2>
+			<h2 class="mt-0">@game.ServerGame.Title</h2>
 			<p>@game.ServerGame.Description</p>
 			
 			<p>
@@ -55,6 +57,35 @@ else
 						@game.ServerGame.Portable
 					</div>
 				</div>
+				<div class="row justify-content-start">
+					<div class="col-3">
+						Latest Version
+					</div>
+					<div class="col-5">
+						@game.ServerGame.Version
+					</div>
+				</div>
+
+				
+				@if (game.IsInstalled)
+				{
+					<div class="row justify-content-start">
+						<div class="col-3">
+							Version
+						</div>
+						<div class="col-5">
+							@game.ClientGame.InstalledVersion
+						</div>
+					</div>
+					<div class="row justify-content-start">
+						<div class="col-3">
+							Installed At
+						</div>
+						<div class="col-5">
+							@game.ClientGame.InstallPath
+						</div>
+					</div>
+				}
 			</p>
 			
 			<p>
@@ -67,6 +98,7 @@ else
 				else
 				{
 					<button class="btn btn-primary me-2" @onclick="() => Install(game.ServerGame)">Install</button>
+					<button class="btn btn-warning me-2" @onclick="() => MarkInstalled(game.ServerGame)">Mark as Already Installed</button>
 				}
 			</p>
 		</div>
@@ -98,6 +130,12 @@ else
 		await InstallerService.InstallGame(game, new CancellationToken());
 	}
 
+	private async Task MarkInstalled(ServerGame game)
+	{
+        var installPath = Path.Combine(ManifestService.ConfigurationDirectory, game.Name);
+		await ConfigurationService.WriteInstalledGame(game, installPath, new CancellationToken());
+	}
+
 	private async Task ViewInExplorer(ClientGame game)
 	{
 		InstallerService.ViewInExplorer(game);
@@ -116,5 +154,14 @@ else
 	private async Task ViewGame(string name)
 	{
 		NavigationManager.NavigateTo($"/game/{name}");
+	}
+
+	private string PosterUrl(ServerGame game)
+	{
+		var serverUri = new Uri(StateContainer.Manifest.RootUrl);
+		var uriBuilder = new UriBuilder(serverUri);
+		uriBuilder.Path += game.Name + "/";
+		uriBuilder.Path += game.PosterUrl;
+		return uriBuilder.Uri.ToString();
 	}
 }

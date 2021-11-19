@@ -4,12 +4,15 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Environment;
 
 namespace LANMaker.Data
 {
 	public class ConfigurationService
 	{
-		private static string ConfigPath => Path.Combine(Directory.GetParent(AppContext.BaseDirectory).FullName, "Resources/config.json");
+		public static string ConfigDirectory => Path.Combine(GetFolderPath(SpecialFolder.MyDocuments), "LANMaker");
+		public static string ConfigurationFile => Path.Combine(ConfigDirectory, "config.json");
+
 		private readonly StateContainer state;
 
 		public ConfigurationService(StateContainer state)
@@ -17,17 +20,64 @@ namespace LANMaker.Data
 			this.state = state;
 		}
 
-		public static async Task<Configuration> GetConfiguration(CancellationToken cancellationToken)
+		public async Task<Configuration> GetConfiguration(CancellationToken cancellationToken)
+		{
+			CreateConfigurationDirectory();
+
+			Configuration configuration;
+			if (!LocalConfigurationExists())
+			{
+				configuration = new Configuration
+				{
+					ManifestUrl = "https://drogoganor.net/lan/manifest.json"
+				};
+
+				await SaveConfiguration(configuration);
+			}
+            else
+			{
+				configuration = await ReadConfiguration(cancellationToken);
+			}
+
+			return configuration;
+		}
+
+		private static async Task<Configuration> ReadConfiguration(CancellationToken cancellationToken)
 		{
 			try
 			{
-				using var stream = new FileStream(ConfigPath, FileMode.Open, FileAccess.Read);
+				using var stream = new FileStream(ConfigurationFile, FileMode.Open, FileAccess.Read);
 				return await JsonSerializer.DeserializeAsync<Configuration>(stream, cancellationToken: cancellationToken);
 			}
 			catch
 			{
 				throw;
 			}
+		}
+
+		private static void CreateConfigurationDirectory()
+		{
+			if (!Directory.Exists(ConfigDirectory))
+			{
+				try
+				{
+					Directory.CreateDirectory(ConfigDirectory);
+				}
+				catch
+				{
+					throw;
+				}
+			}
+		}
+
+		private static bool LocalConfigurationExists()
+		{
+			if (!File.Exists(ConfigurationFile))
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		public async void DeleteGame(ClientGame game, CancellationToken cancellationToken)
@@ -84,7 +134,7 @@ namespace LANMaker.Data
 					WriteIndented = true,
                 });
 
-                using var configFile = new StreamWriter(ConfigPath);
+                using var configFile = new StreamWriter(ConfigurationFile);
                 await configFile.WriteAsync(json);
 
 				// Update state with new configuration

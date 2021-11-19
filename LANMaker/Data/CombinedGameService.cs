@@ -29,7 +29,7 @@ namespace LANMaker.Data
                 });
 			}
 
-            return list;
+            return list.OrderBy(combinedGame => combinedGame.ServerGame.Title).ToList();
 		}
     }
 }

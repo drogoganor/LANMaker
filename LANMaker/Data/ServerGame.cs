@@ -2,8 +2,8 @@
 {
     public class ServerGame
     {
-        public string Title { get; set; }
         public string Name { get; set; }
+        public string Title { get; set; }
         public string Version { get; set; }
         public bool Multiplayer { get; set; }
         public bool Portable { get; set; } = true;

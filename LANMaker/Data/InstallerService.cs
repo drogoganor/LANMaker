@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -83,21 +84,38 @@ namespace LANMaker.Data
             return true;
         }
 
-		private async Task<Stream> DownloadGameArchive(ServerGame game, CancellationToken cancellationToken)
+        private string ZipUrl(ServerGame game)
+        {
+            var serverUri = new Uri(state.Manifest.RootUrl);
+            var uriBuilder = new UriBuilder(serverUri);
+            uriBuilder.Path += game.Name + "/";
+            uriBuilder.Path += game.ZipUrl;
+            return uriBuilder.Uri.ToString();
+        }
+
+        private async Task<Stream> DownloadGameArchive(ServerGame game, CancellationToken cancellationToken)
         {
             var memoryStream = new MemoryStream();
-            using (var client = new HttpClient())
+            using (var client = new HttpClient()
+            {
+                BaseAddress = new Uri(state.Manifest.RootUrl),
+                Timeout = TimeSpan.FromMinutes(5),
+            })
             {
                 _downloadTrackerService.TrackGameDownload(game, client, cancellationToken);
 
-                using (var result = await client.GetAsync(game.ZipUrl, cancellationToken))
+                try
                 {
+                    var result = await client.GetAsync(game.Name + "/" + game.ZipUrl, cancellationToken);
                     if (result.IsSuccessStatusCode)
                     {
                         var stream = await result.Content.ReadAsStreamAsync(cancellationToken);
                         await stream.CopyToAsync(memoryStream, cancellationToken);
                     }
-
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
                 }
             }
 

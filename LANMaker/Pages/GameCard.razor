@@ -3,13 +3,14 @@
 @inject GameRunService GameRunService
 @inject InstallerService InstallerService
 @inject NavigationManager NavigationManager
+@inject StateContainer StateContainer
 
 <div class="card me-2 mb-2" style="width: 18rem;">
 	<div class="d-flex justify-content-center bg-secondary" @onclick="() => ViewGame(Game.ServerGame.Name)">
-		<img src="@Game.ServerGame.PosterUrl" alt="@Game.ServerGame.Name Poster" style="width: 18rem; height: 18rem; object-fit: contain;">
+		<img src="@PosterUrl(Game.ServerGame)" alt="@Game.ServerGame.Title Poster" style="width: 18rem; height: 18rem; object-fit: contain;">
 	</div>
 	<div class="card-body">
-		<h5 class="card-title">@Game.ServerGame.Name</h5>
+		<h5 class="card-title">@Game.ServerGame.Title</h5>
 
 		@if (Game.IsInstalled)
 		{
@@ -30,11 +31,11 @@
 </div>
 
 @code {
-    [Parameter]
-    public bool IsInstalledView { get; set; }
+	[Parameter]
+	public bool IsInstalledView { get; set; }
 
-    [Parameter]
-    public CombinedGame Game { get; set; }
+	[Parameter]
+	public CombinedGame Game { get; set; }
 
 	private async Task Install(ServerGame game)
 	{
@@ -55,5 +56,14 @@
 	private async Task ViewGame(string name)
 	{
 		NavigationManager.NavigateTo($"/game/{name}");
+	}
+
+	private string PosterUrl(ServerGame game)
+	{
+		var serverUri = new Uri(StateContainer.Manifest.RootUrl);
+		var uriBuilder = new UriBuilder(serverUri);
+		uriBuilder.Path += game.Name + "/";
+		uriBuilder.Path += game.PosterUrl;
+		return uriBuilder.Uri.ToString();
 	}
 }

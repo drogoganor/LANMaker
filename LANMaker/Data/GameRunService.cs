@@ -36,7 +36,6 @@ namespace LANMaker.Data
 			{
 				FileName = processPath,
 				WorkingDirectory = workingDirectory,
-				//UseShellExecute = true,
 			};
 
 			process = Process.Start(processInfo);
