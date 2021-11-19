@@ -19,7 +19,10 @@ else
 	<div class="d-flex flex-wrap">
 		@foreach (var game in state.Games)
 		{
-			<GameCard Game=game IsInstalledView=false />
+			@if (!game.IsInstalled)
+			{
+				<GameCard Game=game IsInstalledView=false />
+			}
 		}
 	</div>
 }

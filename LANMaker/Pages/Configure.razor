@@ -17,7 +17,8 @@
 }
 else
 {
-	<EditForm Model="@configuration" OnValidSubmit="@HandleValidSubmit">
+	<EditForm Model="@configuration">
+		@* OnValidSubmit="@HandleValidSubmit" *@
 		<div class="mb-3">
 			<label class="form-label" for="manifestUrl">Manifest URL</label>
 			<InputText class="form-control" id="manifestUrl" @bind-Value="configuration.ManifestUrl" />
@@ -29,8 +30,8 @@ else
 		</div>
 		
 		<div class="mb-3">
-			<button class="btn btn-primary" type="submit">Save</button>
-			<button class="btn btn-secondary" @onclick="UpdateManifest">Refresh Manifest</button>
+			<button class="btn btn-primary" @onclick="() => HandleValidSubmit()">Save</button>
+			<button class="btn btn-secondary" @onclick="() => UpdateManifest()">Refresh Manifest</button>
 		</div>
 	</EditForm>
 }
@@ -43,7 +44,7 @@ else
 		configuration = StateContainer.Configuration;
 	}
 
-	private async void HandleValidSubmit()
+	private async Task HandleValidSubmit()
 	{
 		await ConfigurationService.SaveConfiguration(configuration);
 		await UpdateManifest();
