@@ -1,8 +1,11 @@
 {
   "profiles": {
-    "Windows Machine": {
+    "LANMaker (Package)": {
       "commandName": "MsixPackage",
       "nativeDebugging": false
+    },
+    "LANMaker (Unpackaged)": {
+      "commandName": "Project"
     }
   }
 }

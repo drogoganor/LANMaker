@@ -2,10 +2,11 @@ using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
+using LANMaker.Data;
 
-namespace LANMaker.Data
+namespace LANMaker.Services
 {
-	public class DownloadTrackerService
+    public class DownloadTrackerService
     {
         public event EventHandler DownloadStatusChanged;
         private readonly StateContainer state;
@@ -83,5 +84,5 @@ namespace LANMaker.Data
         {
             return state.GameDownloads.FirstOrDefault(gameDownload => gameDownload.Game.Name == game.Name);
         }
-	}
+    }
 }

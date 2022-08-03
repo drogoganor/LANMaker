@@ -1,11 +1,13 @@
 ﻿@using LANMaker.Data
+@using LANMaker.Services
+@using LANMaker.Services
 @using System.Threading
 @inject GameRunService GameRunService
 @inject InstallerService InstallerService
 @inject NavigationManager NavigationManager
 @inject StateContainer StateContainer
 
-<div class="card me-2 mb-2" style="width: 18rem;">
+<div class="card me-2 mb-2 theme-{@StateContainer.Configuration.ThemeName}" style="width: 18rem;">
 	<div class="d-flex justify-content-center bg-secondary" @onclick="() => ViewGame(Game.ServerGame.Name)">
 		<img src="@PosterUrl(Game.ServerGame)" alt="@Game.ServerGame.Title Poster" style="width: 15rem; height: 15rem; object-fit: contain;">
 	</div>
@@ -14,15 +16,15 @@
 
 		@if (Game.IsInstalled)
 		{
-			<button class="btn btn-success me-2" @onclick="() => PlayGame(Game.ClientGame)">Play</button>
-			@if (IsInstalledView)
-			{
-				<button class="btn btn-danger me-2" @onclick="() => DeleteGame(Game.ClientGame)">Uninstall</button>
-			}
+			<button class="btn btn-success me-2" @onclick="() => PlayGame(Game.ClientGame)">
+				<span class="oi oi-caret-right" aria-hidden="true"></span> Play
+			</button>
 		}
 		else
 		{
-			<button class="btn btn-primary me-2" @onclick="() => Install(Game.ServerGame)">Install</button>
+			<button class="btn btn-primary me-2" @onclick="() => Install(Game.ServerGame)">
+				<span class="oi oi-cloud-download" aria-hidden="true"></span> Install
+			</button>
 		}
 		@*
 		<p class="card-text">@game.Description</p>
@@ -46,11 +48,6 @@
 	private async Task PlayGame(ClientGame game)
 	{
 		await GameRunService.PlayGame(game);
-	}
-
-	private async Task DeleteGame(ClientGame game)
-	{
-		await InstallerService.DeleteGame(game, new CancellationToken());
 	}
 
 	private async Task ViewGame(string name)

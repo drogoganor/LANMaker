@@ -6,10 +6,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using LANMaker.Data;
 
-namespace LANMaker.Data
+namespace LANMaker.Services
 {
-	public class InstallerService
+    public class InstallerService
     {
         private readonly DownloadTrackerService _downloadTrackerService;
         private readonly ConfigurationService _configurationService;
@@ -22,7 +23,7 @@ namespace LANMaker.Data
             _downloadTrackerService = downloadTrackerService;
         }
 
-		public async Task InstallGame(ServerGame game, CancellationToken cancellationToken)
+        public async Task InstallGame(ServerGame game, CancellationToken cancellationToken)
         {
             var installPath = Path.Combine(ManifestService.ConfigurationDirectory, game.Name);
             var configuration = state.Configuration;
@@ -67,7 +68,7 @@ namespace LANMaker.Data
             Process.Start("explorer.exe", installPath);
         }
 
-		private async Task<bool> IsGameInstalled(ServerGame game, string installPath, Configuration configuration)
+        private async Task<bool> IsGameInstalled(ServerGame game, string installPath, Configuration configuration)
         {
             // Check if the install directory exists
             if (!Directory.Exists(installPath))
@@ -133,5 +134,5 @@ namespace LANMaker.Data
             zip.ExtractToDirectory(installPath);
             stream.Close();
         }
-	}
+    }
 }

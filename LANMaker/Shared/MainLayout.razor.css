@@ -1,7 +1,26 @@
+
 .page {
 	position: relative;
 	display: flex;
 	flex-direction: column;
+}
+
+.theme-default .page {
+	background-image: linear-gradient(180deg, #252422 0%, #403d39 70%);
+	color: #fffcf2;
+}
+
+.theme-default .sidebar {
+	background-image: linear-gradient(180deg, #252422 0%, #403d39 70%);
+}
+
+.theme-neon-pink .page {
+	background-image: linear-gradient(180deg, #252422 0%, #403d39 70%);
+	color: #D543F2;
+}
+
+.theme-neon-pink .sidebar {
+	background-image: linear-gradient(180deg, #252422 0%, #403d39 70%);
 }
 
 main {
@@ -9,7 +28,7 @@ main {
 }
 
 .sidebar {
-	background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+	/*background-image: linear-gradient(180deg, #111110 0%, #111110 70%);*/
 }
 
 .top-row {

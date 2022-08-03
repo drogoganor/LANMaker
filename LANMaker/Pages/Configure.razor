@@ -2,6 +2,10 @@
 
 @using System.Threading
 @using LANMaker.Data
+@using LANMaker.Enums
+@using LANMaker.Services
+@using System.ComponentModel.DataAnnotations
+@using System.Reflection
 @inject StateContainer StateContainer
 @inject NavigationManager NavigationManager
 @inject ConfigurationService ConfigurationService
@@ -28,10 +32,32 @@ else
 			<label class="form-label" for="timeoutMinutes">Download Timeout (Minutes)</label>
 			<InputNumber class="form-control" id="timeoutMinutes" @bind-Value="configuration.TimeoutMinutes" />
 		</div>
+
+		<div class="mb-3">
+			<label class="form-label" for="themeName">Interface Theme</label>
+			<InputSelect @bind-Value="configuration.ThemeName" class="form-select">
+				@foreach (Enum theme in Enum.GetValues(typeof(ThemeEnum)))
+				{
+					var themeAttribute = theme
+						.GetType()?
+						.GetMember(theme.ToString())?
+						.First()?
+						.GetCustomAttribute<DisplayAttribute>();
+					var themeKey = themeAttribute.ShortName;
+					var themeLabel = themeAttribute.Name;
+
+					<option value="@themeKey">@themeLabel</option>
+				}
+			</InputSelect>
+		</div>
 		
 		<div class="mb-3">
-			<button class="btn btn-primary" @onclick="() => HandleValidSubmit()">Save</button>
-			<button class="btn btn-secondary" @onclick="() => UpdateManifest()">Refresh Manifest</button>
+			<button class="btn btn-primary" @onclick="() => HandleValidSubmit()">
+				<span class="oi oi-pencil" aria-hidden="true"></span> Save
+			</button>
+			<button class="btn btn-secondary" @onclick="() => UpdateManifest()">
+				<span class="oi oi-reload" aria-hidden="true"></span> Refresh Manifest
+			</button>
 		</div>
 	</EditForm>
 }

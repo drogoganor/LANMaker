@@ -1,56 +1,20 @@
 ﻿@page "/"
 
 @using LANMaker.Data
-@using System.Threading
 @inject StateContainer StateContainer
-@inject ConfigurationService ConfigurationService
-@inject ManifestService ManifestService
-@inject CombinedGameService CombinedGameService
 @inject NavigationManager NavigationManager
 
-<h1>Store</h1>
+<h1>Installed Games</h1>
 
-@if (state == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-	<div class="d-flex flex-wrap">
-		@foreach (var game in state.Games)
+<div class="d-flex flex-wrap">
+	@if (StateContainer.Games != null)
+	{
+		@foreach (var game in StateContainer.Games)
 		{
-			@if (!game.IsInstalled)
+			@if (game.IsInstalled)
 			{
-				<GameCard Game=game IsInstalledView=false />
+				<GameCard Game=game IsInstalledView=true />
 			}
 		}
-	</div>
-}
-
-@code {
-	private StateContainer state;
-
-	protected override async Task OnInitializedAsync()
-	{
-		var configuration = await ConfigurationService.GetConfiguration(new CancellationToken());
-		if (configuration == null)
-		{
-			NavigationManager.NavigateTo("/configure");
-		}
-
-		StateContainer.Configuration = configuration;
-
-		var manifest = await ManifestService.GetManifest(new CancellationToken());
-		if (manifest == null)
-		{
-			NavigationManager.NavigateTo("/configure");
-		}
-
-		StateContainer.Manifest = manifest;
-
-		var games = CombinedGameService.GetCombinedGames();
-		StateContainer.Games = games;
-
-		state = StateContainer;
 	}
-}
+</div>

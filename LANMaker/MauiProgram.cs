@@ -1,37 +1,43 @@
-﻿using Microsoft.AspNetCore.Components.WebView.Maui;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Maui;
-using Microsoft.Maui.Hosting;
-using Microsoft.Maui.Controls.Compatibility;
-using Microsoft.Maui.Controls.Hosting;
-using LANMaker.Data;
-using System;
+﻿using LANMaker.Data;
+using LANMaker.Services;
+using Nito.AsyncEx;
 
-namespace LANMaker
+namespace LANMaker;
+
+public static class MauiProgram
 {
-	public static class MauiProgram
+	public static MauiApp CreateMauiApp()
 	{
-		public static MauiApp CreateMauiApp()
-		{
-			var builder = MauiApp.CreateBuilder();
-			builder
-				.RegisterBlazorMauiWebView()
-				.UseMauiApp<App>()
-				.ConfigureFonts(fonts =>
-				{
-					fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-				});
+		var builder = MauiApp.CreateBuilder();
+		builder
+			.UseMauiApp<App>()
+			.ConfigureFonts(fonts =>
+			{
+				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+			});
 
-			builder.Services.AddBlazorWebView();
-			builder.Services.AddSingleton<StateContainer>();
-			builder.Services.AddSingleton<ManifestService>();
-			builder.Services.AddSingleton<ConfigurationService>();
-			builder.Services.AddSingleton<InstallerService>();
-			builder.Services.AddSingleton<GameRunService>();
-			builder.Services.AddSingleton<DownloadTrackerService>();
-			builder.Services.AddSingleton<CombinedGameService>();
+		builder.Services.AddMauiBlazorWebView();
+#if DEBUG
+		builder.Services.AddBlazorWebViewDeveloperTools();
+#endif
 
-			return builder.Build();
-		}
-	}
+        builder.Services.AddBlazorWebView();
+
+
+        builder.Services.AddSingleton<StartupService>();
+        builder.Services.AddSingleton<StateContainer>();
+        builder.Services.AddSingleton<ManifestService>();
+        builder.Services.AddSingleton<ConfigurationService>();
+        builder.Services.AddSingleton<InstallerService>();
+        builder.Services.AddSingleton<GameRunService>();
+        builder.Services.AddSingleton<DownloadTrackerService>();
+        builder.Services.AddSingleton<CombinedGameService>();
+
+        var host = builder.Build();
+
+        AsyncContext.Run(() => Startup.RegisterLANMaker(host.Services));
+        var settings = host.Services.GetRequiredService<StateContainer>();
+
+        return host;
+    }
 }

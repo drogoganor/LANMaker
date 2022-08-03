@@ -2,6 +2,8 @@
 
 @using System.Threading
 @using LANMaker.Data
+@using LANMaker.Services
+@using System.Diagnostics
 @inject StateContainer StateContainer
 @inject NavigationManager NavigationManager
 @inject DownloadTrackerService DownloadTrackerService
@@ -16,10 +18,18 @@
 				<h5 class="card-title">@download.Game.Title</h5>
 				<p class="card-text">Status: @download.DownloadStatus</p>
 				<p class="card-text">Elapsed: @download.ElapsedFormatted</p>
-				<button class="btn btn-primary" @onclick="() => CancelDownload(download)">Cancel</button>
+				<button class="btn btn-primary" @onclick="() => CancelDownload(download)">
+					<span class="oi oi-ban" aria-hidden="true"></span> Cancel
+				</button>
 			</div>
 		</div>
 	}
+
+	<div>
+		<button class="btn btn-success me-2" @onclick="() => OpenDownloadsFolderInExplorer()">
+			<span class="oi oi-folder" aria-hidden="true"></span> Open Storage Directory in Explorer
+		</button>
+	</div>
 </div>
 
 @code {
@@ -32,6 +42,17 @@
 	{
 		downloads = StateContainer.GameDownloads;
 		DownloadTrackerService.DownloadStatusChanged += OnDownloadStatusChanged;
+	}
+
+	private async void OpenDownloadsFolderInExplorer()
+	{
+		var startInfo = new ProcessStartInfo
+		{
+			Arguments = StateContainer.Configuration.StoragePath,
+			FileName = "explorer.exe"
+		};
+
+		Process.Start(startInfo);
 	}
 
 	protected override void OnAfterRender(bool firstRender)

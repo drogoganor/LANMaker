@@ -4,13 +4,14 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using LANMaker.Data;
 using static System.Environment;
 
-namespace LANMaker.Data
+namespace LANMaker.Services
 {
     public class ManifestService
     {
-        public static string ConfigurationDirectory => Path.Combine(Environment.GetFolderPath(SpecialFolder.MyDocuments), "LANMaker");
+        public static string ConfigurationDirectory => Path.Combine(GetFolderPath(SpecialFolder.MyDocuments), "LANMaker");
         public static string ManifestPath => Path.Combine(ConfigurationDirectory, "manifest.json");
 
         private readonly ConfigurationService _configurationService;
@@ -24,7 +25,7 @@ namespace LANMaker.Data
 
         public async Task<Manifest> GetManifest(CancellationToken stoppingToken)
         {
-			CreateManifestDirectory();
+            CreateManifestDirectory();
 
             if (!LocalManifestExists())
             {
