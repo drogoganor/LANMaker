@@ -1,0 +1,6 @@
+@LANMaker.Server_HostAddress = http://localhost:5053
+
+GET {{LANMaker.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,58 +1,33 @@
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.0.31611.283
+VisualStudioVersion = 17.9.34714.143
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LANMaker", "LANMaker\LANMaker.csproj", "{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LANMaker.Server", "LANMaker.Server\LANMaker.Server.csproj", "{42B90325-196E-43DB-9DA9-AFFE9E3E2085}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "lanmaker.client", "lanmaker.client\lanmaker.client.esproj", "{F5542091-9168-4D7C-AC93-20F81393BDD2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Debug|ARM = Debug|ARM
-		Debug|ARM64 = Debug|ARM64
-		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
-		Release|ARM = Release|ARM
-		Release|ARM64 = Release|ARM64
-		Release|x64 = Release|x64
-		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Debug|ARM.Build.0 = Debug|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Debug|ARM.Deploy.0 = Debug|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Debug|ARM64.ActiveCfg = Debug|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Debug|ARM64.Build.0 = Debug|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Debug|ARM64.Deploy.0 = Debug|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Debug|x64.Build.0 = Debug|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Debug|x64.Deploy.0 = Debug|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Debug|x86.Build.0 = Debug|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Debug|x86.Deploy.0 = Debug|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Release|ARM.ActiveCfg = Release|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Release|ARM.Build.0 = Release|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Release|ARM.Deploy.0 = Release|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Release|ARM64.ActiveCfg = Release|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Release|ARM64.Build.0 = Release|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Release|ARM64.Deploy.0 = Release|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Release|x64.ActiveCfg = Release|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Release|x64.Build.0 = Release|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Release|x64.Deploy.0 = Release|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Release|x86.ActiveCfg = Release|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Release|x86.Build.0 = Release|Any CPU
-		{1B586223-6C0E-481F-AD7B-13CCF49FA7FE}.Release|x86.Deploy.0 = Release|Any CPU
+		{42B90325-196E-43DB-9DA9-AFFE9E3E2085}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42B90325-196E-43DB-9DA9-AFFE9E3E2085}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42B90325-196E-43DB-9DA9-AFFE9E3E2085}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42B90325-196E-43DB-9DA9-AFFE9E3E2085}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5542091-9168-4D7C-AC93-20F81393BDD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5542091-9168-4D7C-AC93-20F81393BDD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5542091-9168-4D7C-AC93-20F81393BDD2}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F5542091-9168-4D7C-AC93-20F81393BDD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5542091-9168-4D7C-AC93-20F81393BDD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5542091-9168-4D7C-AC93-20F81393BDD2}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {61F7FB11-1E47-470C-91E2-47F8143E1572}
+		SolutionGuid = {3BB78B67-84AE-4C63-9E9A-6CF1B681ADCE}
 	EndGlobalSection
 EndGlobal
