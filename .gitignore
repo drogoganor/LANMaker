@@ -3,3 +3,6 @@ LANMaker/ClientApp/.idea/
 LANMaker.Server/obj/
 LANMaker.Server/bin/
 lanmaker.client/obj/
+node_modules/
+obj/
+OldCode/
