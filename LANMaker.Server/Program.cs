@@ -1,4 +1,5 @@
 using ElectronNET.API;
+using LANMaker.Server;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseElectron(args);
@@ -7,6 +8,8 @@ builder.WebHost.UseElectron(args);
 builder.Services.AddElectron();
 
 builder.Services.AddControllers();
+
+builder.Services.RegisterServices();
 
 var app = builder.Build();
 

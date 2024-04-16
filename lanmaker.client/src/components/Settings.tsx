@@ -5,9 +5,7 @@ export const Settings = () => {
   const { isPending, error, data } = useQuery({
     queryKey: ["Settings"],
     queryFn: () =>
-      axios
-        .get("http://localhost:8001/WeatherForecast")
-        .then((res) => res.data),
+      axios.get("http://localhost:8001/Configuration").then((res) => res.data),
   });
 
   if (isPending) return "Loading...";
