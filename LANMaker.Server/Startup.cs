@@ -12,6 +12,7 @@ namespace LANMaker.Server
             services.AddSingleton(stateContainer);
             services.AddSingleton<ConfigurationService>();
             services.AddSingleton<ManifestService>();
+            services.AddSingleton<GameRunService>();
             return services;
         }
     }

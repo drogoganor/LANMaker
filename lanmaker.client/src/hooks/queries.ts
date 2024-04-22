@@ -18,6 +18,11 @@ export const useManifest = () => {
   });
 };
 
+export const useRunGame = () => {
+  return (name: string) =>
+    axios.get("http://localhost:8001/GameRun", { params: { name } });
+};
+
 export const useCombinedGames = () => {
   const {
     isPending: isConfigPending,

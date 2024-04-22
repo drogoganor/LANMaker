@@ -1,13 +1,12 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useCombinedGames, useManifest, useRunGame } from "../hooks/queries";
+import { useCombinedGames, useManifest } from "../hooks/queries";
 
-export interface InstalledGamePageProps {}
+export interface StoreGamePageProps {}
 
-export const InstalledGamePage = () => {
+export const StoreGamePage = () => {
   const games = useCombinedGames();
   const { data: manifest } = useManifest();
   const navigate = useNavigate();
-  const runGame = useRunGame();
 
   const { gameId } = useParams();
 
@@ -17,7 +16,7 @@ export const InstalledGamePage = () => {
   const game = games.find((x) => x.name === gameId);
 
   const navigateTo = () => {
-    navigate("/");
+    navigate("/store");
   };
 
   if (!game) return null;
@@ -26,7 +25,7 @@ export const InstalledGamePage = () => {
     <div className="container-fluid p-3">
       <div className="mb-3">
         <a href="#" className="btn btn-primary" onClick={navigateTo}>
-          Back to Games
+          Back to Store
         </a>
       </div>
       <div className="row align-items-start mb-3">
@@ -46,22 +45,9 @@ export const InstalledGamePage = () => {
           <p>Publisher: {game.publisher}</p>
           <p>Released: {game.yearPublished}</p>
           <p>{game.description}</p>
-          <div className="row justify-content-between">
-            <div className="col-2">
-              <a
-                href="#"
-                className="btn btn-success btn-lg"
-                onClick={() => runGame(game.name)}
-              >
-                Play
-              </a>
-            </div>
-            <div className="col-3">
-              <a href="#" className="btn btn-danger">
-                Uninstall
-              </a>
-            </div>
-          </div>
+          <a href="#" className="btn btn-primary">
+            Install
+          </a>
         </div>
       </div>
     </div>
