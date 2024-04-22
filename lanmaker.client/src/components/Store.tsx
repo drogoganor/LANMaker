@@ -1,21 +1,19 @@
-import { Card } from "react-bootstrap";
-import { useManifest } from "../hooks/queries";
+import { useCombinedGames } from "../hooks/queries";
+import { StoreGameCard } from "./StoreGameCard";
 
 export const Store = () => {
-  const { isPending, error, data } = useManifest();
-
-  if (isPending) return "Loading...";
-
-  if (error) return "An error has occurred: " + error.message;
+  const games = useCombinedGames();
 
   return (
     <div className="container p-3">
       <h3>Store</h3>
-      {data.games.map((x) => (
-        <Card>
-          <h3>{x.title}</h3>
-        </Card>
-      ))}
+      <div className="gap-3" style={{ flexWrap: "wrap", display: "flex" }}>
+        {games
+          .filter((x) => !x.installed)
+          .map((x) => (
+            <StoreGameCard game={x} />
+          ))}
+      </div>
     </div>
   );
 };

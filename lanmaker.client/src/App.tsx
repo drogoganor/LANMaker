@@ -8,7 +8,7 @@ function App() {
         <div className="col-2 gx-0 vh-100">
           <Sidebar />
         </div>
-        <div className="col bg-light vh-100">
+        <div className="col-10 bg-light vh-100" style={{ overflowY: "scroll" }}>
           <Main />
         </div>
       </div>
