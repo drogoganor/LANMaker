@@ -1,12 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { useConfig } from "../hooks/queries";
 
 export const Settings = () => {
-  const { isPending, error, data } = useQuery({
-    queryKey: ["Settings"],
-    queryFn: () =>
-      axios.get("http://localhost:8001/Configuration").then((res) => res.data),
-  });
+  const { isPending, error, data } = useConfig();
 
   if (isPending) return "Loading...";
 

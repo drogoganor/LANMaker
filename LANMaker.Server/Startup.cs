@@ -11,6 +11,7 @@ namespace LANMaker.Server
 
             services.AddSingleton(stateContainer);
             services.AddSingleton<ConfigurationService>();
+            services.AddSingleton<ManifestService>();
             return services;
         }
     }

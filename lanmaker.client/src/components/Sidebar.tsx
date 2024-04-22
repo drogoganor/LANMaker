@@ -7,6 +7,9 @@ export const Sidebar = () => {
       <div className="container h-100">
         <Stack>
           <Link to={`/`} className="navbar-brand d-flex align-items-top">
+            Games
+          </Link>
+          <Link to={`/store`} className="navbar-brand d-flex align-items-top">
             Store
           </Link>
           <Link

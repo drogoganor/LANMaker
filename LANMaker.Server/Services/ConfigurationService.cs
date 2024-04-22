@@ -1,14 +1,12 @@
 using System.Text.Json;
 using LANMaker.Data;
+using LANMaker.Server;
 using static System.Environment;
 
 namespace LANMaker.Services
 {
     public class ConfigurationService
     {
-        public static string ConfigDirectory => Path.Combine(GetFolderPath(SpecialFolder.MyDocuments), "LANMaker");
-        public static string ConfigurationFile => Path.Combine(ConfigDirectory, "config.json");
-
         private readonly StateContainer state;
 
         public ConfigurationService(StateContainer state)
@@ -42,7 +40,7 @@ namespace LANMaker.Services
         {
             try
             {
-                using var stream = new FileStream(ConfigurationFile, FileMode.Open, FileAccess.Read);
+                using var stream = new FileStream(Paths.ConfigurationFile, FileMode.Open, FileAccess.Read);
                 return await JsonSerializer.DeserializeAsync<Configuration>(stream, cancellationToken: cancellationToken);
             }
             catch
@@ -53,11 +51,11 @@ namespace LANMaker.Services
 
         private static void CreateConfigurationDirectory()
         {
-            if (!Directory.Exists(ConfigDirectory))
+            if (!Directory.Exists(Paths.ConfigDirectory))
             {
                 try
                 {
-                    Directory.CreateDirectory(ConfigDirectory);
+                    Directory.CreateDirectory(Paths.ConfigDirectory);
                 }
                 catch
                 {
@@ -68,7 +66,7 @@ namespace LANMaker.Services
 
         private static bool LocalConfigurationExists()
         {
-            if (!File.Exists(ConfigurationFile))
+            if (!File.Exists(Paths.ConfigurationFile))
             {
                 return false;
             }
@@ -130,7 +128,7 @@ namespace LANMaker.Services
                     WriteIndented = true,
                 });
 
-                using var configFile = new StreamWriter(ConfigurationFile);
+                using var configFile = new StreamWriter(Paths.ConfigurationFile);
                 await configFile.WriteAsync(json);
 
                 // Update state with new configuration

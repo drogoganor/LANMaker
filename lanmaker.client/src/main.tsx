@@ -6,6 +6,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Settings } from "./components/Settings.tsx";
 import { Store } from "./components/Store.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Games } from "./components/Games.tsx";
 
 const queryClient = new QueryClient();
 
@@ -16,6 +17,16 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
+        element: <Games />,
+      },
+    ],
+  },
+  {
+    path: "/store",
+    element: <App />,
+    children: [
+      {
+        path: "/store",
         element: <Store />,
       },
     ],
